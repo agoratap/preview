@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="ro">
+<head><meta name="robots" content="noindex,nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; form-action 'none'">
+<title>Cere un expert · Request an expert (PREP)</title>
+<style>:root{--bg:#f5f6fb;--card:#fff;--ink:#1b1f2a;--muted:#6a7185;--brand:#3b4cca;--brand2:#6a5af9;--ok:#16794c;--okbg:#e5f6ee;--warn:#8a5a00;--warnbg:#fff4d6;--bad:#a1122b;--badbg:#fde8ec;--line:#e3e6f0}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+.top{display:flex;justify-content:space-between;align-items:center;padding:14px 24px;background:#fff;border-bottom:1px solid var(--line)}
+.brand{font-weight:700;display:flex;gap:8px;align-items:center}.brand small{font-weight:400;color:var(--muted)}
+.logo{color:var(--brand2);font-size:20px}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.lang-btn{border:0;background:#fff;padding:6px 14px;cursor:pointer;font-weight:600;color:var(--muted)}
+.lang-btn.active{background:var(--brand);color:#fff}
+.wrap{max-width:820px;margin:0 auto;padding:28px 18px 60px}
+.hero{background:linear-gradient(135deg,#fff,#eef0ff);border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:0 8px 30px rgba(59,76,202,.08)}
+h1{margin:0 0 6px;font-size:30px}h3{margin:2px 0 8px;font-size:18px}
+.muted{color:var(--muted)}.small{font-size:13px}
+textarea{width:100%;margin-top:14px;padding:14px;border:1px solid var(--line);border-radius:12px;font:inherit;resize:vertical}
+textarea:focus,input:focus{outline:2px solid var(--brand2);outline-offset:1px}
+.actions{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+button.primary{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border:0;padding:10px 22px;border-radius:10px;font-weight:700;cursor:pointer}
+button.ghost{background:#fff;border:1px solid var(--line);padding:10px 16px;border-radius:10px;cursor:pointer}
+.local-note{margin-left:auto;font-size:12px;color:var(--ok)}
+#result{margin-top:22px;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.row{display:flex;justify-content:space-between;gap:12px}.conf{text-align:right}.conf strong{font-size:22px;display:block}
+.label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:5px 12px;background:#fff;font-size:14px}
+button.chip{cursor:pointer;font-weight:600;color:var(--brand)}
+.chip-ok{background:var(--okbg);color:var(--ok);border-color:#bfe6d2}
+.banner{border-radius:12px;padding:14px 18px;border:1px solid}.banner p{margin:4px 0 0}
+.banner-urgent{background:var(--badbg);color:var(--bad);border-color:#f3b4c0}
+.banner-time{background:var(--warnbg);color:var(--warn);border-color:#f0d58a}
+.q{display:block;margin:10px 0}.q span{display:block;font-size:14px;margin-bottom:4px}
+.q input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font:inherit}
+.badge-demo{display:inline-block;background:#222;color:#ffd84d;font-size:11px;font-weight:800;letter-spacing:.08em;padding:2px 8px;border-radius:6px;vertical-align:middle}
+.demo-note{background:var(--warnbg);color:var(--warn);padding:8px 12px;border-radius:8px;font-size:13px}
+.offer-list{display:grid;gap:10px;margin-top:10px}
+.offer{display:flex;flex-direction:column;gap:2px;border:2px dashed #c9cbd8;border-radius:12px;padding:12px;background:#fafaff}
+.offers [data-locked]{margin:0}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo">◆</span> <span>Platformă servicii AI <small>(Trusto · prototip local)</small></span></div>
+  <div class="lang" role="group" aria-label="Language">
+    <button type="button" id="lang-ro" class="lang-btn active" aria-pressed="true">RO</button>
+    <button type="button" id="lang-en" class="lang-btn" aria-pressed="false">EN</button>
+  </div>
+</header>
+<main class="wrap">
+  <section class="hero">
+    <h1 id="t-title">Cere un expert</h1>
+    <p id="t-sub" class="muted"></p>
+    <textarea id="request" rows="4" aria-label="request"></textarea>
+    <div class="actions">
+      <button type="button" id="btn-analyze" class="primary"></button>
+      <button type="button" id="btn-clear" class="ghost"></button>
+      <span class="local-note">⬤ offline · fără rețea / no network</span>
+    </div>
+  </section>
+  <section id="result" aria-live="polite"></section>
+</main>
+<script>// GENERATED from triage/engine.py by tools/gen_ui_rules.py -- do not edit by hand.
+(function (root, f) { if (typeof module === 'object' && module.exports) module.exports = f(); else root.TriageRules = f(); })(this, function () {
+return {
+ "DOMAINS": {
+  "legal": [
+   "lawyer",
+   "legal",
+   "contract",
+   "lawsuit",
+   "court",
+   "dispute",
+   "trademark",
+   "avocat",
+   "contract",
+   "litigiu",
+   "anwalt",
+   "vertrag",
+   "klage",
+   "solicitor",
+   "notary",
+   "agreement",
+   "divorce",
+   "inherit",
+   "sued",
+   "notar",
+   "attorney",
+   " sue ",
+   "testament",
+   "moștenire",
+   "rechtsanwalt",
+   "jurist"
+  ],
+  "accounting": [
+   "accountant",
+   "accounting",
+   "tax return",
+   "vat",
+   "payroll",
+   "bookkeep",
+   "invoice",
+   "audit",
+   "contabil",
+   "tva",
+   "salarii",
+   "steuer",
+   "buchhalt",
+   "tax advisor",
+   "income tax",
+   "corporation tax",
+   "year-end accounts"
+  ],
+  "consulting": [
+   "consult",
+   "strategy",
+   "business plan",
+   "relocat",
+   "company formation",
+   "set up a company",
+   "incorporat",
+   "market entry",
+   "strategie",
+   "relocare",
+   "plan de afaceri",
+   "beratung",
+   "unternehmensgr"
+  ],
+  "engineering": [
+   "engineer",
+   "software",
+   "app development",
+   "website",
+   "prototype",
+   "cad",
+   "electrical",
+   "mechanical",
+   "inginer",
+   "aplica",
+   "entwickl",
+   "developer",
+   "api",
+   "firmware",
+   "wordpress",
+   "mobile app",
+   "programator",
+   "crm"
+  ]
+ },
+ "FACTS": {
+  "legal": [
+   [
+    "country",
+    "In which country/jurisdiction does this matter fall?",
+    "\\b(cyprus|romania|germany|uk|usa|eu|cipru|deutschland)\\b"
+   ],
+   [
+    "party_type",
+    "Are you a private person or a company?",
+    "\\b(company|ltd|gmbh|srl|private person|individual|firma)\\b"
+   ],
+   [
+    "deadline",
+    "Is there a court or contractual deadline? When?",
+    "\\b(deadline|by \\d|until|until|termen|frist)\\b|\\d{4}-\\d{2}-\\d{2}"
+   ],
+   [
+    "documents",
+    "Which documents exist (contract, notices, letters)?",
+    "\\b(contract|notice|letter|agreement|documents?)\\b"
+   ]
+  ],
+  "accounting": [
+   [
+    "country",
+    "Which country is the entity tax-resident in?",
+    "\\b(cyprus|romania|germany|uk|usa|eu|cipru|deutschland)\\b"
+   ],
+   [
+    "entity_type",
+    "Sole trader, company or private person?",
+    "\\b(company|ltd|gmbh|srl|sole trader|freelanc|pfa|private person)\\b"
+   ],
+   [
+    "period",
+    "Which period or tax year?",
+    "\\b(20\\d\\d|q[1-4]|quarter|monthly|annual|year)\\b"
+   ],
+   [
+    "volume",
+    "Roughly how many invoices/transactions per month?",
+    "\\b\\d+\\s*(invoices?|transactions?|facturi)\\b"
+   ]
+  ],
+  "consulting": [
+   [
+    "goal",
+    "What is the one outcome you want?",
+    "\\b(want|need|goal|obiectiv|looking to)\\b"
+   ],
+   [
+    "country",
+    "Which country or countries are involved?",
+    "\\b(cyprus|romania|germany|uk|usa|eu|cipru|deutschland)\\b"
+   ],
+   [
+    "timeline",
+    "When do you need it done?",
+    "\\b(by|within|in)\\s+\\d+\\s*(days?|weeks?|months?)\\b|\\d{4}-\\d{2}-\\d{2}|\\basap\\b"
+   ],
+   [
+    "budget",
+    "Is there a budget range?",
+    "[€$£]\\s?\\d|\\b\\d+\\s?(eur|usd|gbp|euro)\\b"
+   ]
+  ],
+  "engineering": [
+   [
+    "deliverable",
+    "What exactly must exist at the end (app, drawing, prototype)?",
+    "\\b(app|website|drawing|prototype|api|module|tool)\\b"
+   ],
+   [
+    "stack",
+    "Any required technology or standard?",
+    "\\b(python|react|node|aws|cad|iso|ce|iec|java|wordpress)\\b"
+   ],
+   [
+    "timeline",
+    "When do you need it?",
+    "\\b(by|within|in)\\s+\\d+\\s*(days?|weeks?|months?)\\b|\\d{4}-\\d{2}-\\d{2}|\\basap\\b"
+   ],
+   [
+    "budget",
+    "Is there a budget range?",
+    "[€$£]\\s?\\d|\\b\\d+\\s?(eur|usd|gbp|euro)\\b"
+   ]
+  ]
+ },
+ "BLOCKLIST": [
+  "\\b(suicid|self[- ]harm|kill myself)\\b",
+  "\\b(arrest(ed)?|police custody|detained)\\b",
+  "\\b(m[aă] sinucid|vreau s[aă] mor|sinucidere|suizid|selbstmord)\\b",
+  "\\bmir das leben nehmen\\b",
+  "\\b(arestat[aă]?|re[tț]inut[aă]?|verhaftet|festgenommen)\\b"
+ ]
+};
+});
+</script>
+<script>// Client-facing logic for the AI services platform (name TBD). PREP, local only, no network.
+// Port of triage/engine.py (rules come from the generated rules.js) + a view-model + HTML renderer.
+// Works in the browser (window.PlatformLogic) and in node (require) so it can be tested.
+(function (root, factory) {
+  var rules = (typeof module === 'object' && module.exports) ? require('./rules.js') : root.TriageRules;
+  var api = factory(rules);
+  if (typeof module === 'object' && module.exports) module.exports = api; else root.PlatformLogic = api;
+})(this, function (RULES) {
+  'use strict';
+  var DOMAIN_KEYS = ['legal', 'accounting', 'consulting', 'engineering'];
+  var MIN_KNOWN = 3;
+
+  // ---------- core triage (faithful port of triage/engine.py) ----------
+  function score(text) {
+    var t = text.toLowerCase(), out = {};
+    Object.keys(RULES.DOMAINS).forEach(function (d) {
+      var n = 0;
+      RULES.DOMAINS[d].filter(function (k, i, a) { return a.indexOf(k) === i; }).forEach(function (k) { if (t.indexOf(k) !== -1) n++; });
+      out[d] = n;
+    });
+    return out;
+  }
+  function factsFor(domain, text) {
+    var t = text.toLowerCase(), known = [], missing = [];
+    RULES.FACTS[domain].forEach(function (f) {
+      if (new RegExp(f[2]).test(t)) known.push(f[0]); else missing.push([f[0], f[1]]);
+    });
+    return { known: known, missing: missing };
+  }
+  function triage(request, minKnown) {
+    minKnown = minKnown === undefined ? MIN_KNOWN : minKnown;
+    if (typeof request !== 'string' || !request.trim()) {
+      return { domain: null, confidence: 0, missing: [], known: [], blocked: false, note: 'empty request', ready_for_offers: false };
+    }
+    var t = request.toLowerCase();
+    for (var i = 0; i < RULES.BLOCKLIST.length; i++) {
+      if (new RegExp(RULES.BLOCKLIST[i]).test(t)) {
+        return { domain: null, confidence: 0, missing: [], known: [], blocked: true, note: 'urgent', ready_for_offers: false };
+      }
+    }
+    var scores = score(request), vals = Object.keys(scores).map(function (k) { return scores[k]; });
+    var best = Math.max.apply(null, vals);
+    if (best === 0) return { domain: null, confidence: 0, missing: [], known: [], blocked: false, note: 'domain unclear', ready_for_offers: false };
+    var tops = Object.keys(scores).filter(function (d) { return scores[d] === best; }).sort();
+    var total = vals.reduce(function (a, b) { return a + b; }, 0);
+    var conf = Math.round(best / total * 100) / 100;
+    if (tops.length !== 1) return { domain: null, confidence: conf, missing: [], known: [], blocked: false, note: 'tie', tied: tops, ready_for_offers: false };
+    var f = factsFor(tops[0], t);
+    return { domain: tops[0], confidence: conf, missing: f.missing, known: f.known, blocked: false,
+             note: f.known.length >= minKnown ? 'ready' : 'asking', ready_for_offers: f.known.length >= minKnown };
+  }
+
+  // ---------- UI-layer time-urgency flag (NOT in the Python core; it never blocks, only highlights) ----------
+  var TIME_URGENT = /\b(urgent|urgently|asap|immediately|today|tomorrow|tonight|this week|dringend|sofort|heute|morgen|azi|mâine|maine|imediat|până mâine|cât mai repede)\b|\bdeadline\b|\btermen\b|\bfrist\b|\bcourt date\b/i;
+  function timeUrgent(text) { return typeof text === 'string' && TIME_URGENT.test(text); }
+
+  // ---------- bilingual strings ----------
+  var STR = {
+    ro: {
+      title: 'Cere un expert', subtitle: 'Descrie ce ai nevoie. Îți spunem ce tip de expert e potrivit și ce lipsește pentru o ofertă.',
+      placeholder: 'Ex.: Am nevoie de un avocat în Cipru pentru un litigiu de contract, firma mea e un Ltd…',
+      analyze: 'Analizează', clear: 'Șterge', domain: 'Domeniu detectat', confidence: 'Încredere',
+      known: 'Ce știm deja', missing: 'Ce mai trebuie să ne spui', allAnswered: 'Avem destule informații.',
+      answerHere: 'Răspunsul tău', offers: 'Oferte de la experți', demoBadge: 'DEMO',
+      demoNote: 'DEMO — experți fictivi, doar pentru a arăta cum va arăta lista. Nu sunt persoane sau firme reale și nu se poate contracta nimic.',
+      offersLocked: 'Ofertele apar după ce completezi informațiile lipsă.', offersLockedN: 'Mai lipsesc {n} informații.',
+      urgentTitle: 'Situație urgentă', urgentBody: 'Cererea ta pare o urgență personală sau de siguranță. Nu afișăm oferte. Sună acum la serviciile de urgență (112 în UE) sau la autoritatea locală.',
+      timeTitle: 'Marcat ca urgent (termen apropiat)', timeBody: 'Am notat că ai un termen apropiat. Spune-ne data exactă ca experții să poată răspunde prioritar.',
+      unclearTitle: 'Nu am putut stabili domeniul', unclearBody: 'Alege mai jos domeniul potrivit:',
+      tieTitle: 'Cererea ține de mai multe domenii', tieBody: 'Alege domeniul pentru care vrei oferta:',
+      emptyBody: 'Scrie cererea ta mai sus.', disclaimer: 'Platforma nu oferă consultanță profesională și nu recomandă o firmă anume. Prototip local, fără trimitere de date.',
+      readyTitle: 'Gata pentru oferte', responseTime: 'Răspuns', priceRange: 'Preț', demoPrice: 'indicativ — demo', lang: 'Limbă',
+      domains: { legal: 'Juridic', accounting: 'Contabilitate', consulting: 'Consultanță', engineering: 'Inginerie / Software' },
+      factLabels: { country: 'Țara', party_type: 'Persoană fizică / firmă', deadline: 'Termen', documents: 'Documente', entity_type: 'Tip entitate',
+                    period: 'Perioadă', volume: 'Volum', goal: 'Obiectiv', timeline: 'Calendar', budget: 'Buget', deliverable: 'Livrabil', stack: 'Tehnologie' },
+      questions: {
+        'legal.country': 'În ce țară / jurisdicție se încadrează cazul?', 'legal.party_type': 'Ești persoană fizică sau firmă?',
+        'legal.deadline': 'Există un termen în instanță sau contractual? Care?', 'legal.documents': 'Ce documente există (contract, notificări, scrisori)?',
+        'accounting.country': 'În ce țară este rezidentă fiscal entitatea?', 'accounting.entity_type': 'PFA/freelancer, firmă sau persoană fizică?',
+        'accounting.period': 'Ce perioadă sau an fiscal?', 'accounting.volume': 'Aproximativ câte facturi/tranzacții pe lună?',
+        'consulting.goal': 'Care este rezultatul pe care îl vrei?', 'consulting.country': 'Ce țară sau țări sunt implicate?',
+        'consulting.timeline': 'Până când ai nevoie de el?', 'consulting.budget': 'Ai un interval de buget?',
+        'engineering.deliverable': 'Ce trebuie să existe la final (aplicație, desen, prototip)?', 'engineering.stack': 'Ai o tehnologie sau un standard obligatoriu?',
+        'engineering.timeline': 'Până când ai nevoie?', 'engineering.budget': 'Ai un interval de buget?'
+      }
+    },
+    en: {
+      title: 'Request an expert', subtitle: 'Describe what you need. We tell you which kind of expert fits and what is missing for an offer.',
+      placeholder: 'E.g.: I need a lawyer in Cyprus for a contract dispute, my company is a Ltd…',
+      analyze: 'Analyze', clear: 'Clear', domain: 'Detected domain', confidence: 'Confidence',
+      known: 'What we already know', missing: 'What we still need from you', allAnswered: 'We have enough information.',
+      answerHere: 'Your answer', offers: 'Expert offers', demoBadge: 'DEMO',
+      demoNote: 'DEMO — fictional experts, only to show what the list will look like. They are not real people or firms and nothing can be hired.',
+      offersLocked: 'Offers appear once you fill in the missing details.', offersLockedN: '{n} details still missing.',
+      urgentTitle: 'Urgent situation', urgentBody: 'Your request looks like a personal-safety emergency. We show no offers. Call emergency services now (112 in the EU) or your local authority.',
+      timeTitle: 'Marked urgent (close deadline)', timeBody: 'We noted a close deadline. Tell us the exact date so experts can respond with priority.',
+      unclearTitle: 'We could not tell the domain', unclearBody: 'Pick the right domain below:',
+      tieTitle: 'Your request spans several domains', tieBody: 'Pick the domain you want the offer for:',
+      emptyBody: 'Write your request above.', disclaimer: 'The platform gives no professional advice and recommends no specific firm. Local prototype, no data is sent anywhere.',
+      readyTitle: 'Ready for offers', responseTime: 'Response', priceRange: 'Price', demoPrice: 'indicative — demo', lang: 'Language',
+      domains: { legal: 'Legal', accounting: 'Accounting', consulting: 'Consulting', engineering: 'Engineering / Software' },
+      factLabels: { country: 'Country', party_type: 'Private person / company', deadline: 'Deadline', documents: 'Documents', entity_type: 'Entity type',
+                    period: 'Period', volume: 'Volume', goal: 'Goal', timeline: 'Timeline', budget: 'Budget', deliverable: 'Deliverable', stack: 'Technology' },
+      questions: null // English questions come straight from the triage core
+    }
+  };
+
+  // Obviously fictional experts. Never real names.
+  var DEMO_EXPERTS = {
+    legal: [['DEMO · Firma Juridică Exemplu A', 'Contracte & litigii / Contracts & disputes', '24h', '€€'], ['DEMO · Cabinet Exemplu B', 'Drept comercial / Commercial law', '48h', '€€€'], ['DEMO · Expert Exemplu C', 'Drept imobiliar / Property law', '72h', '€']],
+    accounting: [['DEMO · Contabil Exemplu A', 'TVA & declarații / VAT & returns', '24h', '€'], ['DEMO · Birou Contabil Exemplu B', 'Salarii & audit / Payroll & audit', '48h', '€€'], ['DEMO · Expert Exemplu C', 'Freelanceri / Freelancers', '48h', '€']],
+    consulting: [['DEMO · Consultant Exemplu A', 'Înființare firmă / Company formation', '24h', '€€'], ['DEMO · Studio Exemplu B', 'Strategie / Strategy', '72h', '€€€'], ['DEMO · Expert Exemplu C', 'Relocare / Relocation', '48h', '€€']],
+    engineering: [['DEMO · Atelier Software Exemplu A', 'Aplicații web / Web apps', '48h', '€€'], ['DEMO · Inginer Exemplu B', 'Prototipuri hardware / Hardware prototypes', '72h', '€€€'], ['DEMO · Dev Exemplu C', 'API & integrări / APIs & integrations', '24h', '€']]
+  };
+
+  function questionText(lang, domain, key, englishFromCore) {
+    var q = STR[lang].questions;
+    return (q && q[domain + '.' + key]) || englishFromCore;
+  }
+
+  // ---------- view model ----------
+  // opts: { lang: 'ro'|'en', answers: {factKey: 'text'}, domain: forced domain chosen by the client }
+  function buildView(request, opts) {
+    opts = opts || {};
+    var lang = opts.lang === 'en' ? 'en' : 'ro', S = STR[lang], answers = opts.answers || {};
+    var res = triage(request);
+    var view = { lang: lang, state: 'empty', domain: null, domainLabel: '', confidence: 0, timeUrgent: false,
+                 blocked: false, questions: [], known: [], choices: [], offers: { visible: false, demo: true, items: [], lockedReason: '' }, ready: false };
+    if (res.blocked) {
+      view.state = 'blocked'; view.blocked = true; return view;           // never any offers, never any questions
+    }
+    view.timeUrgent = timeUrgent(request);
+    var domain = res.domain;
+    if (!domain && opts.domain && DOMAIN_KEYS.indexOf(opts.domain) !== -1 && typeof request === 'string' && request.trim()) domain = opts.domain;
+    if (!domain) {
+      if (typeof request !== 'string' || !request.trim()) return view;
+      view.state = res.note === 'tie' ? 'tie' : 'unclear';
+      view.choices = (res.tied || DOMAIN_KEYS).slice();
+      return view;
+    }
+    var f = factsFor(domain, request.toLowerCase());
+    var known = f.known.slice(), questions = [];
+    f.missing.forEach(function (m) {
+      var a = (answers[m[0]] || '').trim();
+      if (a) known.push(m[0]);
+      else questions.push({ key: m[0], text: questionText(lang, domain, m[0], m[1]) });
+    });
+    view.domain = domain; view.domainLabel = S.domains[domain]; view.confidence = res.domain ? res.confidence : 1;
+    view.known = known.map(function (k) { return { key: k, label: S.factLabels[k] || k }; });
+    view.questions = questions;
+    view.ready = known.length >= MIN_KNOWN;
+    view.state = view.ready ? 'ready' : 'asking';
+    if (view.ready) {
+      view.offers = { visible: true, demo: true, lockedReason: '', items: DEMO_EXPERTS[domain].map(function (e) {
+        return { name: e[0], speciality: e[1], response: e[2], price: e[3], demo: true }; }) };
+    } else {
+      view.offers.lockedReason = S.offersLocked + ' ' + S.offersLockedN.replace('{n}', String(Math.max(0, MIN_KNOWN - known.length)));
+    }
+    return view;
+  }
+
+  // ---------- HTML renderer (pure string, escapes everything dynamic) ----------
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  function renderHTML(view, answers) {
+    answers = answers || {};
+    var S = STR[view.lang], h = '';
+    if (view.state === 'empty') return '<p class="muted">' + esc(S.emptyBody) + '</p>';
+    if (view.state === 'blocked') {
+      return '<div class="banner banner-urgent" role="alert" data-flag="urgent"><strong>' + esc(S.urgentTitle) + '</strong><p>' + esc(S.urgentBody) + '</p></div>'
+           + '<p class="muted small">' + esc(S.disclaimer) + '</p>';
+    }
+    if (view.timeUrgent) h += '<div class="banner banner-time" role="status" data-flag="time-urgent"><strong>' + esc(S.timeTitle) + '</strong><p>' + esc(S.timeBody) + '</p></div>';
+    if (view.state === 'unclear' || view.state === 'tie') {
+      var t = view.state === 'tie' ? [S.tieTitle, S.tieBody] : [S.unclearTitle, S.unclearBody];
+      h += '<div class="card"><h3>' + esc(t[0]) + '</h3><p>' + esc(t[1]) + '</p><div class="chips">';
+      view.choices.forEach(function (d) { h += '<button type="button" class="chip" data-domain="' + esc(d) + '">' + esc(S.domains[d]) + '</button>'; });
+      return h + '</div></div><p class="muted small">' + esc(S.disclaimer) + '</p>';
+    }
+    h += '<div class="card"><div class="row"><div><span class="label">' + esc(S.domain) + '</span><h3 data-domain-label>' + esc(view.domainLabel) + '</h3></div>'
+       + '<div class="conf"><span class="label">' + esc(S.confidence) + '</span><strong>' + Math.round(view.confidence * 100) + '%</strong></div></div>';
+    if (view.known.length) {
+      h += '<span class="label">' + esc(S.known) + '</span><div class="chips">';
+      view.known.forEach(function (k) { h += '<span class="chip chip-ok">✓ ' + esc(k.label) + '</span>'; });
+      h += '</div>';
+    }
+    h += '</div>';
+    h += '<div class="card"><h3>' + esc(S.missing) + '</h3>';
+    if (!view.questions.length) h += '<p class="muted">' + esc(S.allAnswered) + '</p>';
+    view.questions.forEach(function (q) {
+      h += '<label class="q"><span>' + esc(q.text) + '</span><input type="text" data-fact="' + esc(q.key) + '" placeholder="' + esc(S.answerHere) + '" value="' + esc(answers[q.key] || '') + '"></label>';
+    });
+    h += '</div>';
+    h += '<div class="card offers" data-panel="offers"><h3>' + esc(S.offers) + ' <span class="badge-demo">' + esc(S.demoBadge) + '</span></h3>';
+    if (view.offers.visible) {
+      h += '<p class="demo-note">' + esc(S.demoNote) + '</p><div class="offer-list">';
+      view.offers.items.forEach(function (o) {
+        h += '<div class="offer" data-demo="true"><span class="badge-demo">' + esc(S.demoBadge) + '</span><strong>' + esc(o.name) + '</strong><span class="muted">' + esc(o.speciality) + '</span>'
+           + '<span class="small">' + esc(S.responseTime) + ': ' + esc(o.response) + ' · ' + esc(S.priceRange) + ': ' + esc(o.price) + ' (' + esc(S.demoPrice) + ')</span></div>';
+      });
+      h += '</div>';
+    } else {
+      h += '<p class="muted" data-locked>' + esc(view.offers.lockedReason) + '</p>';
+    }
+    h += '</div><p class="muted small">' + esc(S.disclaimer) + '</p>';
+    return h;
+  }
+
+  return { triage: triage, factsFor: factsFor, timeUrgent: timeUrgent, buildView: buildView, renderHTML: renderHTML, esc: esc,
+           STR: STR, DEMO_EXPERTS: DEMO_EXPERTS, MIN_KNOWN: MIN_KNOWN, DOMAIN_KEYS: DOMAIN_KEYS };
+});
+</script>
+<script>(function () {
+  'use strict';
+  var L = window.PlatformLogic;
+  var state = { lang: 'ro', answers: {}, domain: null };
+  var $ = function (id) { return document.getElementById(id); };
+
+  function labels() {
+    var S = L.STR[state.lang];
+    document.documentElement.lang = state.lang;
+    $('t-title').textContent = S.title; $('t-sub').textContent = S.subtitle;
+    $('request').placeholder = S.placeholder;
+    $('btn-analyze').textContent = S.analyze; $('btn-clear').textContent = S.clear;
+    $('lang-ro').classList.toggle('active', state.lang === 'ro'); $('lang-ro').setAttribute('aria-pressed', state.lang === 'ro');
+    $('lang-en').classList.toggle('active', state.lang === 'en'); $('lang-en').setAttribute('aria-pressed', state.lang === 'en');
+  }
+  function render(keepFocus) {
+    var focusKey = keepFocus && document.activeElement && document.activeElement.getAttribute && document.activeElement.getAttribute('data-fact');
+    var view = L.buildView($('request').value, { lang: state.lang, answers: state.answers, domain: state.domain });
+    $('result').innerHTML = L.renderHTML(view, state.answers);
+    if (focusKey) { var el = $('result').querySelector('[data-fact="' + focusKey + '"]'); if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }
+  }
+  $('btn-analyze').addEventListener('click', function () { state.domain = null; render(false); });
+  $('btn-clear').addEventListener('click', function () { $('request').value = ''; state.answers = {}; state.domain = null; render(false); $('request').focus(); });
+  $('request').addEventListener('keydown', function (e) { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { state.domain = null; render(false); } });
+  $('lang-ro').addEventListener('click', function () { state.lang = 'ro'; labels(); render(false); });
+  $('lang-en').addEventListener('click', function () { state.lang = 'en'; labels(); render(false); });
+  $('result').addEventListener('input', function (e) {
+    var k = e.target.getAttribute && e.target.getAttribute('data-fact');
+    if (k) { state.answers[k] = e.target.value; clearTimeout(state.t); state.t = setTimeout(function () { render(true); }, 450); }
+  });
+  $('result').addEventListener('click', function (e) {
+    var d = e.target.getAttribute && e.target.getAttribute('data-domain');
+    if (d) { state.domain = d; render(false); }
+  });
+  labels(); render(false);
+})();
+</script>
+</body>
+</html>
